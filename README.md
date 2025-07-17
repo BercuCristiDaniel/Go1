@@ -38,27 +38,6 @@ git clone https://github.com/BercuCristiDaniel/Go1.git
 cd Go1
 ```
 
----
-
-## 🧪 Run Simulation (Docker)
-
-Build and run the Docker container:
-
-```bash
-cd Gazebo_simulation/Simulation/docker
-docker build -t go1_sim .
-docker run --rm -it --net=host --privileged -v /dev:/dev -v $(pwd)/../setup:/home/dev/go1 go1_sim
-```
-
-Inside the container:
-
-```bash
-cd ~/go1/src/ros_ws
-catkin_make
-source devel/setup.bash
-roslaunch go1_simulation simulation.launch
-```
-
 
 ---
 
