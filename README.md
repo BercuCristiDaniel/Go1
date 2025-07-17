@@ -1,25 +1,43 @@
 # 🐾 Go1 Quadruped Robot Project
 
-This repository contains the full development, simulation, and deployment pipeline for the **Unitree Go1** quadruped robot. The project includes both Gazebo simulation and real-world control systems using ROS.
+This repository contains a complete control framework for the Unitree **Go1 quadruped robot**, developed during a research internship. It includes low-level and high-level control systems built on top of ROS Noetic, with simulation support using Gazebo via Docker, and deployment to real hardware via UDP communication.
 
 ---
 
-## 📁 Project Structure
+## 🔍 Project Focus
+
+- ❌ No navigation or SLAM
+- ✅ Model Predictive Control (MPC) for body motion
+- ✅ Feedback linearization
+- ✅ Low-level joint-space control using inverse kinematics and torque computation
+- ✅ Step generation using 7th-order Bézier curves
+- ✅ Real-time execution with ROS nodes
+- ✅ Tested both in Gazebo simulation (Docker-based) and real robot
+
+---
+
+## 🧱 Project Structure
 
 ```
 Go1/
-├── Gazebo_simulation/       # ROS + Gazebo simulation environment
-├── Real_robot/              # Real robot ROS configuration & control
-├── Models/                  # Custom robot/environment models
-├── Config/                  # Configuration and parameter files
-└── README.md                # Main project readme
+├── Gazebo_simulation/                  # Simulation setup using Docker + Gazebo + ROS
+│   └── Simulation/
+│       └── setup/
+│           └── src/ros_ws/            # Catkin workspace
+│               ├── src/slam_gmapping # Ignored, not part of project logic
+├── Real_robot/                        # Real robot ROS interface and control nodes
+├── mpc/                               # MPC controller implementation
+├── trajectory_generation/            # Step pattern & gait generation
+├── low_level_control/                # Torque computation, inverse kinematics
+├── utils/                            # Common tools and math utilities
+└── README.md                         # This file
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-Clone the repository:
+### Clone the repository
 
 ```bash
 git clone https://github.com/BercuCristiDaniel/Go1.git
@@ -28,58 +46,67 @@ cd Go1
 
 ---
 
-## 🧪 Simulation Setup
+## 🧪 Run Simulation (Docker)
 
-All Gazebo and ROS simulation files are in:
-
-📁 [Gazebo_simulation/](Gazebo_simulation/README.md)
-
-Includes:
-- Robot model
-- SLAM + mapping
-- Sensor simulation
-- Teleoperation
-
----
-
-## 🤖 Real Robot Setup
-
-Control the actual Go1 robot using:
-
-📁 [Real_robot/](Real_robot/README.md)
-
-Includes:
-- ROS drivers and launch files
-- Sensor integration
-- Teleop and autonomous navigation
-
----
-
-## 📦 Requirements
-
-- Ubuntu 20.04+
-- ROS Noetic
-- Gazebo 11
-- Unitree SDK (for real robot)
-- Python 3.x
-
----
-
-## 🔧 Build Instructions
-
-1. Source ROS:
+Build and run the Docker container:
 
 ```bash
-source /opt/ros/noetic/setup.bash
+cd Gazebo_simulation/Simulation/docker
+docker build -t go1_sim .
+docker run --rm -it --net=host --privileged -v /dev:/dev -v $(pwd)/../setup:/home/dev/go1 go1_sim
 ```
 
-2. Build the workspace:
+Inside the container:
 
 ```bash
-cd setup/src/ros_ws
+cd ~/go1/src/ros_ws
 catkin_make
 source devel/setup.bash
+roslaunch go1_simulation simulation.launch
 ```
+
+---
+
+## 🤖 Run on Real Robot
+
+1. Connect to Go1's WiFi network.
+2. Update the UDP IPs in your launch/config files.
+3. Launch the control framework:
+
+```bash
+roslaunch go1_control real_robot.launch
+```
+
+Make sure the robot is suspended when testing!
+
+---
+
+## 🧠 Control Architecture
+
+### High-Level
+
+- Simplified 2D kinematic torso model
+- MPC with linear or nonlinear formulation (CasADi)
+- Feedback linearization to reduce complexity
+- Circle and square trajectory tracking
+
+### Low-Level
+
+- Body-to-leg velocity mapping
+- Bézier curve step generation
+- Inverse kinematics
+- Torque control via Euler-Lagrange model
+
+---
+
+## 📦 Dependencies
+
+- ROS Noetic
+- Python 3.x
+- CasADi (for MPC)
+- Eigen / NumPy / SciPy
+- Gazebo 11 (via Docker)
+- Unitree SDK (for real robot)
 
 ---
 
