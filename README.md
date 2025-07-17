@@ -24,13 +24,7 @@ Go1/
 │   └── Simulation/
 │       └── setup/
 │           └── src/ros_ws/            # Catkin workspace
-│               ├── src/slam_gmapping # Ignored, not part of project logic
 ├── Real_robot/                        # Real robot ROS interface and control nodes
-├── mpc/                               # MPC controller implementation
-├── trajectory_generation/            # Step pattern & gait generation
-├── low_level_control/                # Torque computation, inverse kinematics
-├── utils/                            # Common tools and math utilities
-└── README.md                         # This file
 ```
 
 ---
@@ -65,19 +59,6 @@ source devel/setup.bash
 roslaunch go1_simulation simulation.launch
 ```
 
----
-
-## 🤖 Run on Real Robot
-
-1. Connect to Go1's WiFi network.
-2. Update the UDP IPs in your launch/config files.
-3. Launch the control framework:
-
-```bash
-roslaunch go1_control real_robot.launch
-```
-
-Make sure the robot is suspended when testing!
 
 ---
 
@@ -108,11 +89,6 @@ Make sure the robot is suspended when testing!
 - Gazebo 11 (via Docker)
 - Unitree SDK (for real robot)
 
----
-
-## 📄 License
-
-MIT License
 
 ---
 
