@@ -6,7 +6,6 @@ This repository contains a complete control framework for the Unitree **Go1 quad
 
 ## 🔍 Project Focus
 
-- ❌ No navigation or SLAM
 - ✅ Model Predictive Control (MPC) for body motion
 - ✅ Feedback linearization
 - ✅ Low-level joint-space control using inverse kinematics and torque computation
