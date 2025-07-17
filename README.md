@@ -6,12 +6,12 @@ This repository contains a complete control framework for the Unitree **Go1 quad
 
 ## 🔍 Project Focus
 
-- ✅ Model Predictive Control (MPC) for body motion
-- ✅ Feedback linearization
-- ✅ Low-level joint-space control using inverse kinematics and torque computation
-- ✅ Step generation using 7th-order Bézier curves
-- ✅ Real-time execution with ROS nodes
-- ✅ Tested both in Gazebo simulation (Docker-based) and real robot
+-  Model Predictive Control (MPC) for body motion
+-  Feedback linearization
+-  Low-level joint-space control using inverse kinematics and torque computation
+-  Step generation using 7th-order Bézier curves
+-  Real-time execution with ROS nodes
+-  Tested both in Gazebo simulation (Docker-based) and real robot
 
 ---
 
@@ -66,6 +66,7 @@ cd Go1
 - Eigen / NumPy / SciPy
 - Gazebo 11 (via Docker)
 - Unitree SDK (for real robot)
+- Docker
 
 
 ---
