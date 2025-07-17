@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="unitree_legged_real" type="imu_odom" name="node_imu_odom" output="screen"/>
+</launch>

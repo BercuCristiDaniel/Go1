@@ -1,0 +1,8 @@
+prefix=/root/ros_ws/install
+
+Name: Quadruped_force_control
+Description: Description of Quadruped_force_control
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

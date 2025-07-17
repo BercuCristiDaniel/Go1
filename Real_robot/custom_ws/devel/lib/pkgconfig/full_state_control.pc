@@ -1,0 +1,8 @@
+prefix=/home/cristi/Desktop/custom_ws/devel
+
+Name: full_state_control
+Description: Description of full_state_control
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

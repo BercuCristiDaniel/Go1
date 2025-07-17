@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="unitree_legged_real" type="robot_connection" name="highstate_lowcmd_node" output="screen"/>
+</launch>

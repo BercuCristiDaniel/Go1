@@ -1,0 +1,4 @@
+<launch>
+  <node name="planner" pkg="foot_pos_control" type="main_high_level.py" output="screen" />
+  <node name="controller" pkg="foot_pos_control" type="main_low_level.py" output="screen" />
+</launch>

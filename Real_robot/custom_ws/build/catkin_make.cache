@@ -1,0 +1,2 @@
+full_body_control:high_level_control:unitree_legged_msgs:unitree_legged_real:unitree_legged_sdk
+-DCATKIN_DEVEL_PREFIX=/home/cristi/Desktop/custom_ws/devel -DCMAKE_INSTALL_PREFIX=/home/cristi/Desktop/custom_ws/install -G Unix Makefiles

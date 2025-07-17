@@ -1,0 +1,8 @@
+prefix=/root/ros_ws/devel
+
+Name: unitree_navigation
+Description: Description of unitree_navigation
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,8 @@
+prefix=/home/oem/catkin_ws/install
+
+Name: go1_path_planner
+Description: Description of go1_path_planner
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: geometry_msgs nav_msgs rospy tf

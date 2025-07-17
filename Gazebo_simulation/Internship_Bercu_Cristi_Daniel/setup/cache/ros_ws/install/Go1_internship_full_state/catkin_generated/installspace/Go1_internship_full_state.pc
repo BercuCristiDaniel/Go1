@@ -1,0 +1,8 @@
+prefix=/root/ros_ws/install
+
+Name: Go1_internship_full_state
+Description: Description of Go1_internship_full_state
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

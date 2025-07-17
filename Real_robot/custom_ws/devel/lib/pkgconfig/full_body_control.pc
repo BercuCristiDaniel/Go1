@@ -1,0 +1,8 @@
+prefix=/home/cristi/Desktop/custom_ws/devel
+
+Name: full_body_control
+Description: Description of full_body_control
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
