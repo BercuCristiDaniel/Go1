@@ -47,7 +47,6 @@ Press the following buttons on the robot’s controller **in order**:
 3. `L2 + B`  
 4. `L1 + L2 + Start`
 
-> You should see indicators on the robot confirming it has entered low-level mode.
 
 ### 🧠 Launch ROS:
 
