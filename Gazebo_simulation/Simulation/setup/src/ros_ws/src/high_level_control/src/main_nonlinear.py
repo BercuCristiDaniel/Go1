@@ -16,6 +16,9 @@ def unwrap_angle(angles):
     return np.unwrap(angles)
 
 class YawUnwrapper:
+    """
+    Ensure smooth transition when transitioning from -pi to pi.
+    """
     def __init__(self):
         self.previous_yaw = None
 
@@ -40,17 +43,20 @@ class YawUnwrapper:
 
 yaw_unwrapper = YawUnwrapper()
 
-def save_to_mat(filename, t, state_xi, pos_ref, control_inputs):
+def save_to_mat(filename, t, state_xi, pos_ref):
+    """ Saves all logged data to a .mat file for MATLAB/post-analysis. """
     data = {
         't': t,
         'state_xi': state_xi,
-        'pos_ref': pos_ref,
-        'control_inputs': control_inputs  # This will store [vx, vy, omega_z]
+        'pos_ref': pos_ref
     }
     scipy.io.savemat(filename, data)
     print(f"Data saved to {filename}.")
 
 def generate_trajectory(traj_type, duration, dt):
+    """
+    Generates a trajectory (circle, line, sine, square) for the robot to follow.
+    """
     t = np.arange(0, duration, dt)
     N = len(t)
     z_height = 0.3
@@ -104,6 +110,7 @@ def generate_trajectory(traj_type, duration, dt):
     return trajectory
 
 def stop_robot():
+    """ Sends a zero velocity command to stop the robot safely. """
     try:
         rospy.loginfo("Stopping robot before shutdown...")
         move_robot(0, 0, 0)

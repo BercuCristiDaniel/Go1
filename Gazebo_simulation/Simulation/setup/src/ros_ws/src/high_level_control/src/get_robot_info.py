@@ -5,6 +5,10 @@ from nav_msgs.msg import Odometry
 
 class RobotCoordinates:
     def __init__(self):
+        """
+            Initializes a ROS subscriber to the /odom topic to receive the robot's
+            position and orientation from the Odometry message.
+        """
         # Initialize node
         # rospy.init_node('robot_coordinate_listener', anonymous=True)
 
@@ -16,6 +20,9 @@ class RobotCoordinates:
         rospy.Subscriber('/odom', Odometry, self.odom_callback)
 
     def odom_callback(self, data):
+        """
+            Callback function triggered whenever a new message is received on /odom.
+        """
         # Extract the position
         x = data.pose.pose.position.x
         y = data.pose.pose.position.y
@@ -32,12 +39,18 @@ class RobotCoordinates:
         self.orientation = (orientation_x, orientation_y, orientation_z, orientation_w)
         # print(self.position)
     def get_coordinates(self):
+        """
+            Waits until position and orientation have been received and returns them.
+        """
         # Keep the node running until we receive data
         while not rospy.is_shutdown():
             if self.position and self.orientation:
                 return self.position, self.orientation
 
 def get_robot_coordinates():
+    """
+        Creates a RobotCoordinates listener and fetches the current coordinates.
+    """
     robot = RobotCoordinates()
     return robot.get_coordinates()
 

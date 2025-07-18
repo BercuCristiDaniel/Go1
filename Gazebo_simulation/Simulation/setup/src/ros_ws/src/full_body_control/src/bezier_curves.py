@@ -6,6 +6,7 @@ import scipy.io
 from velocity_to_leg import QuadrupedVelocityTransformer
 
 def bezier_M_matrix():
+    """Returns the Bézier basis transformation matrix (7th-degree)"""
     return np.array([
         [1, 0, 0, 0, 0, 0, 0],
         [-6, 6, 0, 0, 0, 0, 0],
@@ -17,8 +18,8 @@ def bezier_M_matrix():
     ])
 
 def duty_factor_u(t, T_p, beta_u):
-    beta_t = 0.4
-    beta_t = 0.24
+    """Evaluates the duty cycle phase offset for a swing/support pattern"""
+    beta_t = 0.25
     a = (1 - beta_t) / 2 
     b = (1 + beta_t) / 2 
     if 0 <= t/T_p < a:
@@ -29,10 +30,12 @@ def duty_factor_u(t, T_p, beta_u):
         return beta_u/2 - (beta_u - 1)*(beta_t - (2*t)/T_p + 1)/(2*(beta_t - 1)) + 0.5
 
 def generate_u_vals(T_p, beta_u=0.6):
+    """Generates evaluation points along the phase cycle"""
     t_vals = np.linspace(0, T_p, 7)
     return np.array([duty_factor_u(t, T_p, beta_u) for t in t_vals])
 
 def calc_cp_freqP(veld, cp_max=0.30, freqP_max=2.0, freqP_min=1.0):
+    """Calculates step length and frequency for given leg velocity"""
     a = True
     cp = cp_max
     freqP = freqP_max
@@ -58,11 +61,10 @@ def calc_cp_freqP(veld, cp_max=0.30, freqP_max=2.0, freqP_min=1.0):
 
 
 
-def compute_control_points(p3, v_leg, theta, v_max=2.0, h_min=0.06, h_max=0.12):
+def compute_control_points(p3, v_leg, theta):
+    """Computes Bezier control points for a swing leg based on velocity and angle"""
     d, freq = calc_cp_freqP(v_leg)
-    h = h_min + (h_max - h_min) * (v_leg / v_max)
     h= 0.08
-    direction = np.sign(v_leg) if abs(v_leg) > 0.01 else 1.0
     dx =  d * 0.7 * np.cos(theta)
     dy =  d * 0.7 * np.sin(theta)
 
@@ -75,21 +77,21 @@ def compute_control_points(p3, v_leg, theta, v_max=2.0, h_min=0.06, h_max=0.12):
     return np.vstack([p0, p1, p2, p3, p4, p5, p6]), h, freq
 
 def fit_weights(P, u_vals):
+    """Computes Bezier weights given control points and u samples"""
     T = np.vander(u_vals, N=7, increasing=True)
     M = bezier_M_matrix()
     W = np.linalg.inv(M) @ np.linalg.inv(T.T @ T) @ T.T @ P
     return W
 
 def evaluate_bezier(u_vals, W):
+    """Evaluate Bezier position at given u values using weights W"""
     M = bezier_M_matrix()
     return np.array([np.array([u**i for i in range(7)]) @ M @ W for u in u_vals])
 
 def evaluate_bezier_velocity(u_vals, W):
+    """Evaluate first derivative (velocity) of Bezier trajectory"""
     M = bezier_M_matrix()
-    # print(W)
-    # print("eheeee")
-    # print(W[1:] - W[:-1])
-    dW = 6 * (W[1:] - W[:-1])  # 6th-degree Bézier: velocity uses 6*(Wi+1 - Wi)
+    dW = 6 * (W[1:] - W[:-1]) 
     M_vel = np.array([
         [1, 0, 0, 0, 0, 0],
         [-5, 5, 0, 0, 0, 0],
@@ -101,6 +103,7 @@ def evaluate_bezier_velocity(u_vals, W):
     return np.array([np.array([u**i for i in range(6)]) @ M_vel @ dW for u in u_vals])
 
 def evaluate_bezier_acceleration(u_vals, W):
+    """Evaluate second derivative (acceleration) of Bezier trajectory"""
     dW = 6 * (W[1:] - W[:-1])
     ddW = 5 * (dW[1:] - dW[:-1])  # second derivative
     M_acc = np.array([
@@ -115,10 +118,11 @@ def evaluate_bezier_acceleration(u_vals, W):
 
 
 def generate_all_leg_trajectories(vx, vy, omega_z, walking_type, control_rate=100): 
+    """
+    Generates the 4 trajectories for position, velocity and acceleration for the legs in order to have the given body velocities
+    """
     C = 0.47  
-    L = 0.30  
-    # if vy != 0:
-    #     omega_z = 0.507 * vy + -0.091 + omega_z
+    L = 0.30 
     epsilon = 1e-3
     if abs(vx) < epsilon and abs(vy) < epsilon and abs(omega_z) < epsilon:
         static_positions = {
@@ -201,6 +205,9 @@ def generate_all_leg_trajectories(vx, vy, omega_z, walking_type, control_rate=10
 
 
 def plot_3d_trajectories(trajectories, highlight_idx_ratio=0.4):
+    """
+    Basic plotting funtion that shows all the trajectories in 3d with a respecting trajectory highlight
+    """
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot(111, projection="3d")
     
@@ -274,6 +281,9 @@ def generate_rise_trajectories(z_start=-0.05, z_end=-0.30, duration=5.0, control
 
 
 def plot_single_leg_trajectory_scatter(trajectories, leg_name="rear_right"):
+    """
+    3d plot of one leg trajectory
+    """
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection="3d")
     
@@ -289,56 +299,11 @@ def plot_single_leg_trajectory_scatter(trajectories, leg_name="rear_right"):
     ax.set_title(f"Trajectory Scatter for {leg_name}")
     plt.show()
 
-# Example usage
-
-import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import animation
-
-def animate_3d_trajectories(trajectories, interval=100):
-    fig = plt.figure(figsize=(10, 6))
-    ax = fig.add_subplot(111, projection="3d")
-    
-    # Set limits
-    ax.set_xlim(-0.25, 0.25)
-    ax.set_ylim(-0.2, 0.2)
-    ax.set_zlim(-0.35, 0.0)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.set_title('Animated Bézier Trajectories for All Legs')
-
-    # Initialize scatter points for each leg
-    scatters = {}
-    colors = {
-        "front_left": "red",
-        "front_right": "blue",
-        "rear_left": "green",
-        "rear_right": "purple"
-    }
-
-    for leg_name in trajectories.keys():
-        scatters[leg_name] = ax.scatter([], [], [], color=colors.get(leg_name, "black"), label=leg_name)
-
-    num_points = len(next(iter(trajectories.values())))
-
-    def update(frame):
-        for leg_name, traj in trajectories.items():
-            point = traj[frame]
-            scatters[leg_name]._offsets3d = ([point[0]], [point[1]], [point[2]])
-        return scatters.values()
-
-    ani = animation.FuncAnimation(
-        fig, update, frames=num_points, interval=interval, blit=False, repeat=True
-    )
-
-    ax.legend()
-    plt.show()
-
-    return ani
 
 def save_to_mat(filename, t, state_xi, pos_ref, vel_ref=None, acc_ref=None, control_pts=None):
+    """
+    Saves in .mat files the legs trajectories, velocities, accelerations and the control points
+    """
     data = {
         't': t,
         'state_xi': state_xi,

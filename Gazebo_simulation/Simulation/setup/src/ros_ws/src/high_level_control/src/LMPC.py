@@ -2,6 +2,25 @@ import casadi as ca
 import numpy as np
 
 def linear_MPC(Npred, x0, u0, n, m, dt, Q, R, xmin, xmax, xref, P, b):
+    """
+    Solves a linear MPC problem using a discretized integrator model:
+        x[k+1] = x[k] + dt * u[k]
+
+    Args:
+        Npred (int): Prediction horizon
+        x0 (np.array): Initial state vector
+        u0 (np.array): Initial input (previous control input)
+        n (int): Dimension of the state
+        m (int): Dimension of the control input
+        dt (float): Discretization timestep
+        Q (np.array): State tracking weight matrix
+        R (np.array): Control effort weight matrix
+        xmin (np.array): Minimum state bounds (unused here)
+        xmax (np.array): Maximum state bounds (unused here)
+        xref (np.array): Reference trajectory over horizon (n x Npred+1)
+        P (np.array): Matrix for linear input constraints (Polytope: P*u <= b)
+        b (np.array): Bounds for input constraints
+    """
     solver = ca.Opti()
 
     # Decision variables

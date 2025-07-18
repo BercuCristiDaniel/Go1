@@ -4,6 +4,28 @@ import casadi as ca
 import numpy as np
 
 def MPC(Npred, x0, u0, n, m, dt, f, umin, umax, xmin, xmax, Q, R, P, xref):
+    """
+    Nonlinear Model Predictive Control (NMPC) solver using CasADi's Opti interface.
+    
+    Solves a constrained finite-horizon optimization using the provided nonlinear dynamics f(x, u).
+
+    Args:
+        Npred (int): Prediction horizon
+        x0 (np.array): Initial state vector
+        u0 (np.array): Previous control input (for smoothness penalty)
+        n (int): Number of state variables
+        m (int): Number of control inputs
+        dt (float): Discretization timestep
+        f (casadi.Function): Dynamics function, maps (x, u) → ẋ
+        umin (np.array): Min control input (m-dimensional)
+        umax (np.array): Max control input
+        xmin (np.array): Min state bounds (n-dimensional)
+        xmax (np.array): Max state bounds
+        Q (np.array): State cost matrix
+        R (np.array): Control effort cost matrix
+        P (np.array): Terminal cost matrix
+        xref (np.array): Desired state trajectory (n x Npred+1)
+    """
     solver = ca.Opti()
     
     # Decision variables

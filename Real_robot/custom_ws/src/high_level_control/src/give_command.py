@@ -4,6 +4,9 @@ import rospy
 from geometry_msgs.msg import Twist 
 
 def move_robot(linear_velocity_x, linear_velocity_y, angular_velocity_yaw):
+    """
+        Publishes a velocity command to the /cmd_vel topic for the Go1 robot.
+    """
     #rospy.init_node('robot_command_publisher', anonymous=True)
     
     # Create a publisher for the /cmd_vel topic

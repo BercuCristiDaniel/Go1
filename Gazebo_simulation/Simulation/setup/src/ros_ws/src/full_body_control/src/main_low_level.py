@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-sys.path.append('/root/ros_ws/src/full_body_control/src')
+sys.path.append('/root/ros_ws/src/full_body_control/src')  # Add your custom source 
 
 import rospy
 import time
@@ -23,16 +23,19 @@ should_save_data = False
 
 
 def velocity_callback(msg):
+    """Update the latest commanded body velocity."""
     global latest_velocity
     latest_velocity[0] = msg.linear.x
     latest_velocity[1] = msg.linear.y
     latest_velocity[2] = msg.angular.z
 
 def save_data_callback(msg):
+    """Set flag to trigger data saving."""
     global should_save_data
     should_save_data = True
 
 def save_to_mat(filename, t, state_xi, pos_ref, tau=None):
+    """Save time, states, reference, and optional torque data to .mat file."""
     data = {
         't': t,
         'state_xi': state_xi,
@@ -44,6 +47,7 @@ def save_to_mat(filename, t, state_xi, pos_ref, tau=None):
     print(f"Data saved to {filename}.")
 
 def reorder_joint_vector(q_raw):
+    """Reorder joints to match URDF layout used in control (based on order mapping)."""
     ordered_indices = [1, 2, 0, 4, 5, 3, 7, 8, 6, 10, 11, 9]
     return q_raw[ordered_indices]
 
@@ -57,7 +61,7 @@ def main():
     rate = rospy.Rate(250)
 
     home = Path.home()
-    URDF_PATH = home / "ros_ws/src/foot_pos_control/robots/go1_description/urdf/go1.urdf"
+    URDF_PATH = home / "ros_ws/src/full_body_control/robots/go1_description/urdf/go1.urdf"
     URDF_PATH = str(URDF_PATH.resolve())
     print("Using URDF:", URDF_PATH)
 
@@ -168,11 +172,6 @@ def main():
                 
                 tau_ff = np.clip(tau_ff, -21.7, 21.7)
 
-                # if count == 0:
-                #     log_time.append(rospy.Time.now().to_sec())
-
-                # log_actual_pos[leg_name].append(x_log.copy())
-                # log_desired_pos[leg_name].append(x_des_world.copy())
 
                 for j in range(3):
                     idx = count * 3 + j

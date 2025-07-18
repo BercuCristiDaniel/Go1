@@ -2,7 +2,7 @@
 
 
 import sys
-sys.path.append('/root/ros_ws/src/full_body_control/src')
+sys.path.append('/root/ros_ws/src/full_body_control/src')  # Add custom source path
 
 import numpy as np
 from tf.transformations import euler_from_quaternion
@@ -21,6 +21,9 @@ from std_msgs.msg import Bool
 robot_ready = False
 
 def ready_callback(msg):
+    """Callback to update robot readiness from /robot_ready topic."""
+    global robot_ready
+    robot_ready = msg.data
     global robot_ready
     robot_ready = msg.data
 
@@ -28,6 +31,9 @@ def unwrap_angle(angles):
     return np.unwrap(angles)
 
 class YawUnwrapper:
+    """
+    Ensure smooth transition when transitioning from -pi to pi.
+    """
     def __init__(self):
         self.previous_yaw = None
 
@@ -53,6 +59,7 @@ class YawUnwrapper:
 yaw_unwrapper = YawUnwrapper()
 
 def save_to_mat(filename, t, state_xi, pos_ref):
+    """ Saves all logged data to a .mat file for MATLAB/post-analysis. """
     data = {
         't': t,
         'state_xi': state_xi,
@@ -62,6 +69,9 @@ def save_to_mat(filename, t, state_xi, pos_ref):
     print(f"Data saved to {filename}.")
 
 def generate_trajectory(traj_type, duration, dt):
+    """
+    Generates a trajectory (circle, line, sine, square) for the robot to follow.
+    """
     t = np.arange(0, duration, dt)
     N = len(t)
     z_height = 0.3
@@ -119,16 +129,7 @@ def generate_trajectory(traj_type, duration, dt):
 
 def compute_command(u_global, yaw):
     """
-    Transforms global control inputs to robot-frame velocities.
-
-    Parameters:
-        u_global : np.ndarray
-            A (3,) array of global input [u_ax, u_ay, u_av]
-        yaw : float
-            The robot's orientation (theta) in radians
-
-    Returns:
-        np.ndarray: A (3,) array [v_rx, v_ry, omega_r]
+    Transforms global (world-frame) control into robot-body-frame commands.
     """
     u_ax, u_ay, u_av = u_global
     R = np.array([
@@ -141,6 +142,7 @@ def compute_command(u_global, yaw):
     return u_body
 
 def stop_robot():
+    """ Sends a zero velocity command to stop the robot safely. """
     try:
         rospy.loginfo("Stopping robot before shutdown...")
         move_robot(0, 0, 0)
@@ -148,15 +150,6 @@ def stop_robot():
     except Exception as e:
         rospy.logwarn(f"Failed to stop robot: {e}")
 
-def save_to_mat(filename, t, state_xi, pos_ref, control_inputs):
-    data = {
-        't': t,
-        'state_xi': state_xi,
-        'pos_ref': pos_ref,
-        'control_inputs': control_inputs  # [vx, vy, omega_z]
-    }
-    scipy.io.savemat(filename, data)
-    print(f"Data saved to {filename}.")
 
 def main():
     rospy.init_node('mpc_planner_node', anonymous=True)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-sys.path.append('/home/cristi/Desktop/custom_ws/src/full_body_control/src')
+sys.path.append('/home/cristi/Desktop/custom_ws/src/full_body_control/src')  # Add your custom source 
 
 import rospy
 import time
@@ -27,16 +27,19 @@ trajectories_generated = False  # Flag to track if trajectories have been genera
 motor_publishers = {}
 
 def velocity_callback(msg):
+    """Update the latest commanded body velocity."""
     global latest_velocity
     latest_velocity[0] = msg.linear.x
     latest_velocity[1] = msg.linear.y
     latest_velocity[2] = msg.angular.z
 
 def save_data_callback(msg):
+    """Set flag to trigger data saving."""
     global should_save_data
     should_save_data = True
 
 def save_to_mat(filename, t, state_xi, pos_ref, tau=None):
+    """Save time, states, reference, and optional torque data to .mat file."""
     data = {
         't': t,
         'state_xi': state_xi,
@@ -48,11 +51,15 @@ def save_to_mat(filename, t, state_xi, pos_ref, tau=None):
     print(f"Data saved to {filename}.")
 
 def reorder_joint_vector(q_raw):
+    """Reorder joints to match reak robot layout used in control (based on order mapping)."""
     ordered_indices = [3, 4, 5, 0, 1, 2, 9, 10, 11, 6, 7, 8]
     return q_raw[ordered_indices]
 
 # Send motor commands for a specific leg
 def send_motor_commands_for_leg(leg_name, cmd_msgs):
+    """
+    Sends motor commands to the robot joints
+    """
     JOINT_ORDER = [
         "motor_3", "motor_4", "motor_5",   # FL
         "motor_0", "motor_1", "motor_2",   # FR

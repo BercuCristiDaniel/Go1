@@ -11,12 +11,14 @@ import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 import scipy.io
 import time
-# from robot_state import Go1RobotData
 
 def unwrap_angle(angles):
     return np.unwrap(angles)
 
 class YawUnwrapper:
+    """
+    Ensure smooth transition when transitioning from -pi to pi.
+    """
     def __init__(self):
         self.previous_yaw = None
 
@@ -42,6 +44,7 @@ class YawUnwrapper:
 yaw_unwrapper = YawUnwrapper()
 
 def save_to_mat(filename, t, state_xi, pos_ref):
+    """ Saves all logged data to a .mat file for MATLAB/post-analysis. """
     data = {
         't': t,
         'state_xi': state_xi,
@@ -51,6 +54,9 @@ def save_to_mat(filename, t, state_xi, pos_ref):
     print(f"Data saved to {filename}.")
 
 def generate_trajectory(traj_type, duration, dt):
+    """
+    Generates a trajectory (circle, line, sine, square) for the robot to follow.
+    """
     t = np.arange(0, duration, dt)
     N = len(t)
     z_height = 0.3
@@ -104,6 +110,7 @@ def generate_trajectory(traj_type, duration, dt):
     return trajectory
 
 def stop_robot():
+    """ Sends a zero velocity command to stop the robot safely. """
     try:
         rospy.loginfo("Stopping robot before shutdown...")
         move_robot(0, 0, 0)
@@ -115,16 +122,7 @@ def stop_robot():
 
 def compute_command(u_global, yaw):
     """
-    Transforms global control inputs to robot-frame velocities.
-
-    Parameters:
-        u_global : np.ndarray
-            A (3,) array of global input [u_ax, u_ay, u_av]
-        yaw : float
-            The robot's orientation (theta) in radians
-
-    Returns:
-        np.ndarray: A (3,) array [v_rx, v_ry, omega_r]
+    Transforms global (world-frame) control into robot-body-frame commands.
     """
     u_ax, u_ay, u_av = u_global
     R = np.array([
@@ -136,23 +134,7 @@ def compute_command(u_global, yaw):
     u_body = R @ u_global_vec
     return u_body
 
-def stop_robot():
-    try:
-        rospy.loginfo("Stopping robot before shutdown...")
-        move_robot(0, 0, 0)
-        rospy.sleep(0.1)
-    except Exception as e:
-        rospy.logwarn(f"Failed to stop robot: {e}")
 
-def save_to_mat(filename, t, state_xi, pos_ref, control_inputs):
-    data = {
-        't': t,
-        'state_xi': state_xi,
-        'pos_ref': pos_ref,
-        'control_inputs': control_inputs  # This will store [vx, vy, omega_z]
-    }
-    scipy.io.savemat(filename, data)
-    print(f"Data saved to {filename}.")
 
 def main():
     rospy.init_node('mpc_planner_node', anonymous=True)

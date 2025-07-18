@@ -2,6 +2,13 @@ import casadi as ca
 
 
 def create_full_dynamics_function():
+    """
+        Creates a CasADi function that represents the simplified 2D kinematic model
+        of the robot's torso motion in the plane (x, y, theta).
+        
+        The model uses body-frame linear and angular velocities (vx, vy, omega) to 
+        compute world-frame derivatives of the pose.
+    """
     x = ca.MX.sym('x')
     y = ca.MX.sym('y')
     theta = ca.MX.sym('theta')

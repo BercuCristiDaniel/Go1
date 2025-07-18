@@ -2,10 +2,23 @@ import numpy as np
 
 class QuadrupedVelocityTransformer:
     def __init__(self, L, C):
+        """
+        Initialize transformer with robot geometry.
+        Parameters:
+        - L: Half of the robot width (from side to side)
+        - C: Half of the robot length (from front to back)
+        """
         self.L = L  # Half of the robot width
         self.C = C  # Half of the robot lenght
 
     def transform_body_to_leg_velocities(self, vx, vy, omega_z):
+        """
+        Converts body-frame velocity (vx, vy, omega_z) into approximate
+        leg-specific velocities and their heading angles.
+
+        Returns:
+            A dictionary with leg velocity magnitudes and heading angles.
+        """
         velocity_matrix = np.array([
             [1, 0, self.L / 2],  # Front left
             [1, 0, -self.L / 2],  # Front right
@@ -34,8 +47,6 @@ class QuadrupedVelocityTransformer:
         }
 
 if __name__ == "__main__":
-    L = 0.47  
-    C = 0.30  
     C = 0.47
     L = 0.30
 
