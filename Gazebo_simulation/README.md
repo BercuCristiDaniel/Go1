@@ -76,7 +76,7 @@ roslaunch full_body_control locomotion_control.launch
 ```
 
 This will:
-- Run a rise phase to lower the robot
+- Run a rise phase
 - Wait for velocity commands from high-level controller
 - Execute a trotting gait using torque control
 
