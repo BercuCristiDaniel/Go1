@@ -71,4 +71,10 @@ cd Go1
 
 ---
 
+## ❗ Note
+
+If the unitree files from the project are damaged try to clone them dirrectly from the unitree repos.
+
+---
+
 Maintained by [Cristi Bercu](https://github.com/BercuCristiDaniel)
