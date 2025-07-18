@@ -1,6 +1,6 @@
 # 🐾 Go1 Quadruped Simulation & Control
 
-This repository implements **Model Predictive Control (MPC)** for high-level velocity commands and a **full-body inverse dynamics controller** for low-level torque control of the Unitree Go1 robot in Gazebo simulation.
+This repository implements **Model Predictive Control (MPC)** for high-level velocity commands and a **low-level torque control** of the Unitree Go1 robot in Gazebo simulation.
 
 ---
 
